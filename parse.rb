@@ -4,19 +4,21 @@ require 'csv'
 
 
 class Transactions
-  def initialize
-    @@transactions = []
-  end
+  @@transactions = []
 
-  def push(transaction)
+  def self.push(transaction)
     @@transactions << transaction
   end
 
-  def print
+  def self.print
     @@transactions.each { |t| t.print }
   end
 
-  def csv
+  def self.previous_date
+    @@transactions.last.date
+  end
+
+  def self.csv
     csv_string = CSV.generate do |csv|
       @@transactions.each do |t| 
         csv << t.row
@@ -48,15 +50,14 @@ end
 
 doc = File.open("accounts.html") { |f| Nokogiri::HTML5(f) }
 
-transactions = Transactions.new
-
 doc.css('[data-qe-automation="transactionRow"]').map do |transaction|
   date = transaction.css('[data-qe-automation="date"]').text.strip
+  date = Transactions.previous_date if date.empty?
   description = transaction.css('[data-qe-automation="description"]').text.strip
   amount = transaction.css('[data-qe-automation="amount"]').text.strip
   balance = transaction.css('[data-qe-automation="balance"]').text.strip
   tran = Transaction.new(description, date, amount, balance)
-  transactions.push(tran)
+  Transactions.push(tran)
 end
 
-transactions.csv
+Transactions.csv
