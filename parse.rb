@@ -6,26 +6,29 @@ require 'csv'
 class Transactions
   @@transactions = []
 
-  def self.push(transaction)
-    @@transactions << transaction
-  end
-
-  def self.print
-    @@transactions.each { |t| t.print }
-  end
-
-  def self.previous_date
-    @@transactions.last.date
-  end
-
-  def self.csv
-    csv_string = CSV.generate do |csv|
-      @@transactions.each do |t| 
-        csv << t.row
-      end
+  class << self
+    def add(html)
+      tran = Transaction.create_from_html(html)
+      @@transactions << tran
     end
 
-    puts csv_string
+    def print
+      @@transactions.each { |t| t.print }
+    end
+
+    def previous_date
+      @@transactions.last.date
+    end
+
+    def csv
+      csv_string = CSV.generate do |csv|
+        @@transactions.each do |t| 
+          csv << t.row
+        end
+      end
+
+      puts csv_string
+    end
   end
 end
 
@@ -39,6 +42,15 @@ class Transaction
     @balance = balance
   end
 
+  def self.create_from_html(html)
+    date = html.css('[data-qe-automation="date"]').text.strip
+    date = Transactions.previous_date if date.empty?
+    description = html.css('[data-qe-automation="description"]').text.strip
+    amount = html.css('[data-qe-automation="amount"]').text.strip
+    balance = html.css('[data-qe-automation="balance"]').text.strip
+    self.new(description, date, amount, balance)
+  end
+
   def print
     puts "#{date}, #{description}, #{amount}, #{balance}"
   end
@@ -50,14 +62,8 @@ end
 
 doc = File.open("accounts.html") { |f| Nokogiri::HTML5(f) }
 
-doc.css('[data-qe-automation="transactionRow"]').map do |transaction|
-  date = transaction.css('[data-qe-automation="date"]').text.strip
-  date = Transactions.previous_date if date.empty?
-  description = transaction.css('[data-qe-automation="description"]').text.strip
-  amount = transaction.css('[data-qe-automation="amount"]').text.strip
-  balance = transaction.css('[data-qe-automation="balance"]').text.strip
-  tran = Transaction.new(description, date, amount, balance)
-  Transactions.push(tran)
+doc.css('[data-qe-automation="transactionRow"]').map do |transaction_html|
+  Transactions.add(transaction_html)
 end
 
 Transactions.csv
