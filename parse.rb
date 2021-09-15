@@ -9,7 +9,7 @@ class Transactions
   class << self
     def add(html)
       tran = Transaction.create_from_html(html)
-      @@transactions << tran
+      @@transactions.unshift(tran)
     end
 
     def print
