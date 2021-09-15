@@ -51,12 +51,16 @@ class Transaction
     self.new(description, date, amount, balance)
   end
 
+  def parsed_date
+    Date.parse(date).strftime("%D")
+  end
+
   def print
-    puts "#{date}, #{description}, #{amount}, #{balance}"
+    puts "#{parsed_date}, #{description}, #{amount}, #{balance}"
   end
 
   def row
-    [date, description, amount, balance]
+    [parsed_date, description, balance, amount]
   end 
 end
 
