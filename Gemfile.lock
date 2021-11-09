@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    awesome_print (1.9.2)
     coderay (1.1.3)
     method_source (1.0.0)
     mini_portile2 (2.6.1)
@@ -16,8 +17,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  awesome_print
   nokogiri
   pry (~> 0.13.1)
+
+RUBY VERSION
+   ruby 2.7.3p183
 
 BUNDLED WITH
    2.1.4
