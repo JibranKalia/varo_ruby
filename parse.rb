@@ -4,8 +4,6 @@ require 'csv'
 
 
 class AllTransactions
-  attr_reader :transactions
-
   @@transactions = []
 
   class << self
@@ -19,7 +17,7 @@ class AllTransactions
     end
 
     def previous_date
-      @@transactions.last.date
+      @@transactions.first.date
     end
 
     def csv
@@ -30,6 +28,10 @@ class AllTransactions
       end
 
       puts csv_string
+    end
+
+    def all_transactions
+      @@transactions
     end
   end
 end
