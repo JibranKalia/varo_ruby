@@ -7,5 +7,6 @@ gem 'nokogiri'
 
 group :development do
   gem 'pry', '~> 0.13.1'
+  gem 'pry-byebug'
   gem 'awesome_print'
 end
