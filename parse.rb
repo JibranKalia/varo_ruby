@@ -3,7 +3,9 @@ require 'pry'
 require 'csv'
 
 
-class Transactions
+class AllTransactions
+  attr_reader :transactions
+
   @@transactions = []
 
   class << self
@@ -43,11 +45,11 @@ class Transaction
   end
 
   def self.create_from_html(html)
-    date = html.css('[data-qe-automation="date"]').text.strip
-    date = Transactions.previous_date if date.empty?
     description = html.css('[data-qe-automation="description"]').text.strip
     amount = html.css('[data-qe-automation="amount"]').text.strip
     balance = html.css('[data-qe-automation="balance"]').text.strip
+    date = html.css('[data-qe-automation="date"]').text.strip
+    date = AllTransactions.previous_date if date.empty?
     self.new(description, date, amount, balance)
   end
 
@@ -67,7 +69,7 @@ end
 doc = File.open("accounts.html") { |f| Nokogiri::HTML5(f) }
 
 doc.css('[data-qe-automation="transactionRow"]').map do |transaction_html|
-  Transactions.add(transaction_html)
+ AllTransactions.add(transaction_html)
 end
 
-Transactions.csv
+AllTransactions.csv
